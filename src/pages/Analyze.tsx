@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
-import { ArrowRight, FileText, Briefcase, Loader2, Sparkles } from "lucide-react";
+import { ArrowRight, FileText, Briefcase, Loader2, Sparkles, Upload, X, FileUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { setAnalysisResult } from "@/lib/analysisStore";
 import { toast } from "sonner";

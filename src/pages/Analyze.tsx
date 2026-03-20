@@ -116,17 +116,52 @@ const Analyze = () => {
                 <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
                   <FileText className="w-4 h-4 text-primary" />
                 </div>
-                <div>
+                <div className="flex-1">
                   <h3 className="font-semibold text-sm">Your Resume</h3>
-                  <p className="text-xs text-muted-foreground">Paste your resume content</p>
+                  <p className="text-xs text-muted-foreground">Upload a file or paste content</p>
                 </div>
               </div>
-              <textarea
-                className="flex-1 min-h-[280px] w-full rounded-lg border border-input bg-background p-4 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
-                placeholder="Paste your resume text here...
 
-Example:
-Software Engineer with 3 years of experience in React, TypeScript, Node.js. Built scalable web applications using AWS, PostgreSQL, and Docker..."
+              {/* File upload area */}
+              <div className="mb-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFileUpload(file);
+                  }}
+                />
+                {uploadedFile ? (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/5 border border-primary/15">
+                    <FileUp className="w-4 h-4 text-primary shrink-0" />
+                    <span className="text-sm truncate flex-1">{uploadedFile.name}</span>
+                    {isExtracting ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />
+                    ) : (
+                      <button onClick={removeFile} className="shrink-0 hover:bg-muted rounded p-0.5">
+                        <X className="w-3.5 h-3.5 text-muted-foreground" />
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full flex items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 border-dashed border-border hover:border-primary/30 hover:bg-primary/[0.02] transition-colors text-sm text-muted-foreground"
+                  >
+                    <Upload className="w-4 h-4" />
+                    Upload PDF or DOC
+                  </button>
+                )}
+              </div>
+
+              <div className="text-[10px] text-muted-foreground text-center mb-2 uppercase tracking-wider">or paste below</div>
+
+              <textarea
+                className="flex-1 min-h-[200px] w-full rounded-lg border border-input bg-background p-4 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                placeholder="Paste your resume text here..."
                 value={resumeText}
                 onChange={(e) => setResumeText(e.target.value)}
               />

@@ -27,6 +27,8 @@ const App = () => (
           <Route path="/roadmap" element={<Roadmap />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <SkillChatbot />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

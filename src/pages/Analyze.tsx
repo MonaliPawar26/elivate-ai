@@ -12,6 +12,61 @@ const Analyze = () => {
   const [resumeText, setResumeText] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (file: File) => {
+    const validTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+    if (!validTypes.includes(file.type)) {
+      toast.error("Please upload a PDF or DOC/DOCX file");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File must be under 10MB");
+      return;
+    }
+
+    setUploadedFile(file);
+    setIsExtracting(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/extract-pdf-text`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ error: "Extraction failed" }));
+        throw new Error(err.error || `HTTP ${response.status}`);
+      }
+
+      const { text } = await response.json();
+      setResumeText(text);
+      toast.success("Resume text extracted successfully!");
+    } catch (err: any) {
+      console.error("File extraction error:", err);
+      toast.error(err.message || "Failed to extract text from file");
+      setUploadedFile(null);
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
+  const removeFile = () => {
+    setUploadedFile(null);
+    setResumeText("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const handleAnalyze = async () => {
     if (!resumeText.trim() || !jobDescription.trim()) {

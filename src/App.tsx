@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Navbar from "@/components/Navbar";
+import SkillChatbot from "@/components/SkillChatbot";
 import Index from "./pages/Index";
 import Analyze from "./pages/Analyze";
 import Dashboard from "./pages/Dashboard";
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/roadmap" element={<Roadmap />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <SkillChatbot />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

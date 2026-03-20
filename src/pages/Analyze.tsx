@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
-import { ArrowRight, FileText, Briefcase, Loader2, Sparkles } from "lucide-react";
+import { ArrowRight, FileText, Briefcase, Loader2, Sparkles, Upload, X, FileUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { setAnalysisResult } from "@/lib/analysisStore";
 import { toast } from "sonner";
@@ -12,6 +12,61 @@ const Analyze = () => {
   const [resumeText, setResumeText] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (file: File) => {
+    const validTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+    if (!validTypes.includes(file.type)) {
+      toast.error("Please upload a PDF or DOC/DOCX file");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File must be under 10MB");
+      return;
+    }
+
+    setUploadedFile(file);
+    setIsExtracting(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/extract-pdf-text`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ error: "Extraction failed" }));
+        throw new Error(err.error || `HTTP ${response.status}`);
+      }
+
+      const { text } = await response.json();
+      setResumeText(text);
+      toast.success("Resume text extracted successfully!");
+    } catch (err: any) {
+      console.error("File extraction error:", err);
+      toast.error(err.message || "Failed to extract text from file");
+      setUploadedFile(null);
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
+  const removeFile = () => {
+    setUploadedFile(null);
+    setResumeText("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const handleAnalyze = async () => {
     if (!resumeText.trim() || !jobDescription.trim()) {
@@ -61,17 +116,52 @@ const Analyze = () => {
                 <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
                   <FileText className="w-4 h-4 text-primary" />
                 </div>
-                <div>
+                <div className="flex-1">
                   <h3 className="font-semibold text-sm">Your Resume</h3>
-                  <p className="text-xs text-muted-foreground">Paste your resume content</p>
+                  <p className="text-xs text-muted-foreground">Upload a file or paste content</p>
                 </div>
               </div>
-              <textarea
-                className="flex-1 min-h-[280px] w-full rounded-lg border border-input bg-background p-4 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
-                placeholder="Paste your resume text here...
 
-Example:
-Software Engineer with 3 years of experience in React, TypeScript, Node.js. Built scalable web applications using AWS, PostgreSQL, and Docker..."
+              {/* File upload area */}
+              <div className="mb-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFileUpload(file);
+                  }}
+                />
+                {uploadedFile ? (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/5 border border-primary/15">
+                    <FileUp className="w-4 h-4 text-primary shrink-0" />
+                    <span className="text-sm truncate flex-1">{uploadedFile.name}</span>
+                    {isExtracting ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />
+                    ) : (
+                      <button onClick={removeFile} className="shrink-0 hover:bg-muted rounded p-0.5">
+                        <X className="w-3.5 h-3.5 text-muted-foreground" />
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full flex items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 border-dashed border-border hover:border-primary/30 hover:bg-primary/[0.02] transition-colors text-sm text-muted-foreground"
+                  >
+                    <Upload className="w-4 h-4" />
+                    Upload PDF or DOC
+                  </button>
+                )}
+              </div>
+
+              <div className="text-[10px] text-muted-foreground text-center mb-2 uppercase tracking-wider">or paste below</div>
+
+              <textarea
+                className="flex-1 min-h-[200px] w-full rounded-lg border border-input bg-background p-4 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                placeholder="Paste your resume text here..."
                 value={resumeText}
                 onChange={(e) => setResumeText(e.target.value)}
               />

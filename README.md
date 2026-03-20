@@ -5,6 +5,20 @@
 
 ---
 
+## 🌐 Live Demo
+
+🚀 Experience Elivate AI in action:
+
+👉 https://elivate-ai-gfcv.vercel.app/
+
+### 🎯 What to Try:
+- Upload a resume and job description
+- Analyze skill gaps instantly
+- Generate personalized learning roadmap
+- Explore AI reasoning & recommendations
+
+💡 Tip: Use Demo Mode for quick walkthrough
+
 ## 🧠 Overview
 
 **Elivate AI** is an advanced AI-driven platform that analyzes a user's **Resume** and a target **Job Description** to:

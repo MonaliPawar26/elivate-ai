@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
-import { ArrowRight, Brain, GitBranch, Target, BarChart3, Zap, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Brain, GitBranch, Target, BarChart3, Zap, Shield, TrendingUp } from "lucide-react";
 
 const features = [
   {

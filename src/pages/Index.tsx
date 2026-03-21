@@ -119,7 +119,7 @@ const Index = () => {
             </div>
           </ScrollReveal>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, i) => (
               <ScrollReveal key={feature.title} delay={i * 0.08}>
                 <div className="glass-card-elevated p-8 h-full transition-all duration-300">

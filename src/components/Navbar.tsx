@@ -109,19 +109,27 @@ const Navbar = () => {
             className="md:hidden bg-background/95 backdrop-blur-2xl border-b border-border overflow-hidden"
           >
             <div className="px-6 py-4 space-y-2">
-              {navLinks.map((link) => {
-                const Component = isLanding ? "a" : Link;
-                return (
-                  <Component
+              {navLinks.map((link) =>
+                isLanding ? (
+                  <a
                     key={link.href}
-                    {...(isLanding ? { href: link.href } : { to: link.href })}
+                    href={link.href}
                     onClick={() => setMobileOpen(false)}
                     className="block px-4 py-3 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
                   >
                     {link.label}
-                  </Component>
-                );
-              })}
+                  </a>
+                ) : (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="block px-4 py-3 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
+                  >
+                    {link.label}
+                  </Link>
+                )
+              )}
               <Link to="/analyze" onClick={() => setMobileOpen(false)}>
                 <Button variant="hero" size="sm" className="w-full mt-2 gap-1.5">
                   Get Started <ArrowRight className="w-3.5 h-3.5" />

@@ -21,7 +21,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemPrompt = `You are an expert HR and skills analysis AI. Analyze the provided resume and job description to extract skills, perform gap analysis, and generate a learning roadmap.
+    const systemPrompt = `You are an expert HR, skills analysis, and career readiness AI. Analyze the provided resume and job description to perform comprehensive skill extraction, gap analysis, readiness scoring, and generate a learning roadmap.
 
 You MUST respond with ONLY valid JSON (no markdown, no code fences) in this exact structure:
 {
@@ -31,6 +31,39 @@ You MUST respond with ONLY valid JSON (no markdown, no code fences) in this exac
   "missingSkills": ["string"],
   "matchScore": number (0-100),
   "recommendations": ["string"],
+  "education": [
+    {
+      "degree": "string (e.g. B.Tech, M.S., MBA)",
+      "field": "string (e.g. Computer Science)",
+      "institution": "string",
+      "year": "string or null"
+    }
+  ],
+  "performanceGaps": [
+    {
+      "skill": "string",
+      "currentLevel": "none|beginner|intermediate",
+      "requiredLevel": "beginner|intermediate|advanced",
+      "gapSeverity": "low|medium|high|critical",
+      "description": "string (brief explanation of the gap and its impact)"
+    }
+  ],
+  "readinessScore": {
+    "overall": number (0-100),
+    "technical": number (0-100),
+    "experience": number (0-100),
+    "education": number (0-100),
+    "summary": "string (2-3 sentence readiness assessment)"
+  },
+  "improvementInsights": [
+    {
+      "area": "string (skill area or domain)",
+      "insight": "string (specific actionable insight)",
+      "actionItems": ["string (concrete steps)"],
+      "priority": "low|medium|high",
+      "estimatedTimeWeeks": number
+    }
+  ],
   "roadmap": [
     {
       "id": "string (unique)",
@@ -46,10 +79,14 @@ You MUST respond with ONLY valid JSON (no markdown, no code fences) in this exac
 
 Rules:
 - Extract ALL relevant skills from both texts
+- Extract education details (degrees, fields, institutions) from the resume
 - Use normalized skill names (e.g., "React" not "ReactJS")
 - matchedSkills = skills present in BOTH resume and JD
 - missingSkills = skills in JD but NOT in resume
 - matchScore = percentage of required skills the candidate has
+- performanceGaps: For each missing or partially-matched skill, describe the gap with severity
+- readinessScore: Assess overall readiness across technical skills, experience level, and education fit. Be realistic.
+- improvementInsights: Provide 3-6 specific, actionable insights with concrete steps and time estimates
 - For the roadmap: Mark matched skills as "completed", partially known as "in-progress", and missing skills as "recommended" or "locked" based on dependencies
 - Create realistic dependency chains (e.g., JavaScript -> React -> Next.js)
 - Generate 3-5 actionable recommendations

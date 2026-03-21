@@ -7,22 +7,32 @@ const features = [
   {
     icon: Brain,
     title: "AI Skill Extraction",
-    description: "Automatically identify and categorize skills from resumes and job descriptions using advanced NLP.",
+    description: "Extract structured skills, education, and experience from resumes using advanced NLP and AI models.",
   },
   {
     icon: Target,
-    title: "Gap Analysis",
-    description: "Precisely map the distance between your current skills and your target role requirements.",
+    title: "Real-Time Gap Analysis",
+    description: "Compare your profile against internship and job requirements to identify missing skills and performance gaps.",
+  },
+  {
+    icon: Shield,
+    title: "Readiness Scoring",
+    description: "Get a comprehensive readiness score across technical, experience, and education dimensions.",
   },
   {
     icon: GitBranch,
-    title: "Adaptive Pathways",
-    description: "Generate personalized learning roadmaps that adapt based on skill dependencies and priorities.",
+    title: "Adaptive Roadmap",
+    description: "Generate personalized skill development roadmaps with dependency chains and priority-based learning.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Improvement Insights",
+    description: "Receive prioritized improvement insights with concrete action items and time estimates.",
   },
   {
     icon: BarChart3,
     title: "Progress Analytics",
-    description: "Track your growth with detailed skill analytics and visualize your learning trajectory.",
+    description: "Track growth with skill analytics, performance gap severity, and learning trajectory visualization.",
   },
 ];
 
